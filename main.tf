@@ -1,5 +1,5 @@
 variable "tg_arn_suffixes" {
-  type = "list"
+  type        = "list"
   description = "The list of Target Groups' ARN suffixies for what you need to add alerts"
 }
 
@@ -12,11 +12,11 @@ variable "sns_arn" {
 }
 
 data "aws_lb" "main" {
-  arn  = "${var.lb_arn}"
+  arn = "${var.lb_arn}"
 }
 
 resource "aws_cloudwatch_metric_alarm" "target-response-time" {
-  count = "${length(var.tg_arn_suffixes)}"
+  count               = "${length(var.tg_arn_suffixes)}"
   alarm_name          = "${replace(var.tg_arn_suffixes[count.index],"/(targetgroup/)|(/\\w+$)/","")}-Response-Time"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
@@ -38,7 +38,7 @@ resource "aws_cloudwatch_metric_alarm" "target-response-time" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "target-unhealthy-count" {
-  count = "${length(var.tg_arn_suffixes)}"
+  count               = "${length(var.tg_arn_suffixes)}"
   alarm_name          = "${replace(var.tg_arn_suffixes[count.index],"/(targetgroup/)|(/\\w+$)/","")}-Unhealthy-Count"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
