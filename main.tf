@@ -80,25 +80,3 @@ resource "aws_cloudwatch_metric_alarm" "target-500" {
   ok_actions         = ["${var.sns_arn}"]
   treat_missing_data = "notBreaching"
 }
-
-resource "aws_cloudwatch_metric_alarm" "target-400" {
-  count               = "${length(var.tg_arn_suffixes)}"
-  alarm_name          = "${replace(var.tg_arn_suffixes[count.index],"/(targetgroup/)|(/\\w+$)/","")}-HTTP-4XX"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
-  metric_name         = "HTTPCode_Target_4XX_Count"
-  namespace           = "AWS/ApplicationELB"
-  period              = "300"
-  statistic           = "Sum"
-  threshold           = "5"
-
-  dimensions {
-    LoadBalancer = "${data.aws_lb.main.arn_suffix}"
-    TargetGroup  = "${var.tg_arn_suffixes[count.index]}"
-  }
-
-  alarm_description  = "Trigger an alert when 4XX's in ${var.tg_arn_suffixes[count.index]} goes high"
-  alarm_actions      = ["${var.sns_arn}"]
-  ok_actions         = ["${var.sns_arn}"]
-  treat_missing_data = "notBreaching"
-}
